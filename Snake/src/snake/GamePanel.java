@@ -36,6 +36,10 @@ import java.util.Scanner;
      int applesEaten;
      int appleX;
      int appleY;
+     int applex[] = new int[5];
+     int appley[] = new int[5];
+     int deathX;
+     int deathY;
      char direction = 'R'; // R (right), L (Left), U (Up), D (Down)
      boolean running = false;
      Timer timer; 
@@ -51,8 +55,10 @@ import java.util.Scanner;
         startGame();
     }
     
-    public void startGame(){
+    public void startGame(){ 
         newApple();
+        newApples();
+        newDeath();
         running = true;
         timer = new Timer(DELAY, this);
         timer.start();
@@ -65,13 +71,23 @@ import java.util.Scanner;
     public void draw(Graphics g){
         
         if (running){
-            for (int i = 0; i<SCREEN_HEIGHT/UNIT_SIZE; i++){
+            /*for (int i = 0; i<SCREEN_HEIGHT/UNIT_SIZE; i++){
                 g.setColor(Color.GRAY);
                 g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
                 g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
             }
+            */
+            
+                if (applesEaten >10){ 
+                    g.setColor(Color.yellow);
+                    g.fillOval(deathX, deathY, UNIT_SIZE, UNIT_SIZE);
+                }
+                
                 g.setColor(Color.red);
                 g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
+                for (int i = 0; i<applex.length; i++){
+                    g.fillOval(applex[i], appley[i], UNIT_SIZE, UNIT_SIZE);
+                }
         
             for (int i = 0; i<bodyParts; i++){
                 if ( i == 0){
@@ -87,7 +103,7 @@ import java.util.Scanner;
             }
             }
             
-            g.setColor(Color.red);
+            g.setColor(Color.white);
             g.setFont(new Font("Ink Free",Font.BOLD, 40));
             FontMetrics metrics = getFontMetrics(g.getFont());
             g.drawString("Score: " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten))/2, g.getFont().getSize() );
@@ -99,9 +115,21 @@ import java.util.Scanner;
     }
     public void newApple(){
         appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
-        appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;   
-        
+        appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;        
     }
+    
+    public void newDeath(){
+        deathX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
+        deathY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;      
+    }
+    
+    public void newApples(){
+        for (int i = 0; i<applex.length; i++){
+        applex[i] = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE; 
+        appley[i] = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
+        } 
+    }
+    
     public void move(){
         for (int i = bodyParts; i>0; i--){
             x[i] = x[i-1];
@@ -130,7 +158,29 @@ import java.util.Scanner;
             applesEaten++;
             newApple();
         }
+        
+        for (int i = 0; i<applex.length; i++){
+           if((x[0]== applex[i]) && (y[0] == appley[i])){
+            applex[i] = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE; 
+            appley[i] = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE; 
+            bodyParts++;
+            applesEaten++;
+            newApple();
+        } 
+        }
     }
+    
+    public void checkDeath(){
+        if((x[0]== deathX) && (y[0] == deathY)){         
+            bodyParts = bodyParts-8;
+            applesEaten = applesEaten-8;
+            deathX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
+            deathY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
+            newDeath();
+        } 
+    }
+    
+    
     public void checkCollisions(){
         
         //Check if head collides with rest of body
@@ -170,7 +220,7 @@ import java.util.Scanner;
             g.setColor(Color.white);
             g.setFont(new Font("Ink Free",Font.BOLD, 25));
             FontMetrics metrics = getFontMetrics(g.getFont());
-            g.drawString("Your Achieved A New Max Score:", (SCREEN_WIDTH - metrics.stringWidth("Your Achieved A New Max Score:"))/2, g.getFont().getSize() *5 );
+            g.drawString("Your Achieved A New Max Score:", (SCREEN_WIDTH - metrics.stringWidth("You Achieved A New Max Score:"))/2, g.getFont().getSize() *5 );
         }
         
         //TopScore
@@ -198,7 +248,11 @@ import java.util.Scanner;
         if(running){
             move();
             checkApple();
+            if (applesEaten>10){
+            checkDeath();   
+            }
             checkCollisions();
+            
            
         } 
         repaint();
