@@ -29,7 +29,7 @@ import java.util.Scanner;
      static final int SCREEN_HEIGHT = 600;
      static final int UNIT_SIZE = 25;
      static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/UNIT_SIZE;
-     static final int DELAY = 75; // the heigher this number, the slower the game is.
+     static int DELAY = 75; // the heigher this number, the slower the game is.
      final int x[] = new int[GAME_UNITS]; //hold all the x cpordinates
      final int y[] = new int[GAME_UNITS]; //hold all y coordinates 
      int bodyParts = 6;
@@ -40,6 +40,7 @@ import java.util.Scanner;
      int appley[] = new int[5];
      int deathX;
      int deathY;
+     String level = "L0";
      char direction = 'R'; // R (right), L (Left), U (Up), D (Down)
      boolean running = false;
      Timer timer; 
@@ -62,6 +63,9 @@ import java.util.Scanner;
         running = true;
         timer = new Timer(DELAY, this);
         timer.start();
+        System.out.println("To pause press the ESCAPE");
+        System.out.println("To continue press SPACE bar");
+        timer.stop();
     }
     
     public void paintComponent(Graphics g){
@@ -77,10 +81,29 @@ import java.util.Scanner;
                 g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
             }
             */
-            
+
+                 
                 if (applesEaten >10){ 
                     g.setColor(Color.yellow);
                     g.fillOval(deathX, deathY, UNIT_SIZE, UNIT_SIZE);
+                    level = "L1";
+                }
+                
+                if (applesEaten >20){
+                   this.setBackground(Color.magenta);
+                   level = "L2";
+                }
+                if (applesEaten >30){
+                   this.setBackground(Color.orange); 
+                   level = "L3";
+                }
+                if (applesEaten >40){
+                   this.setBackground(Color.red); 
+                   level = "L4";
+                }
+                if (applesEaten >45){
+                   this.setBackground(Color.CYAN); 
+                   level = "L5";
                 }
                 
                 g.setColor(Color.red);
@@ -106,7 +129,7 @@ import java.util.Scanner;
             g.setColor(Color.white);
             g.setFont(new Font("Ink Free",Font.BOLD, 40));
             FontMetrics metrics = getFontMetrics(g.getFont());
-            g.drawString("Score: " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten))/2, g.getFont().getSize() );
+            g.drawString("Score: " + applesEaten + " Level: "+ level, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten + " Level: "+ level))/2, g.getFont().getSize() );
         
         }
         else {
@@ -174,12 +197,14 @@ import java.util.Scanner;
         if((x[0]== deathX) && (y[0] == deathY)){         
             bodyParts = bodyParts-8;
             applesEaten = applesEaten-8;
+            level = "L0";
             deathX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
             deathY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
             newDeath();
         } 
     }
     
+
     
     public void checkCollisions(){
         
@@ -240,8 +265,8 @@ import java.util.Scanner;
         g.setFont(new Font("Ink Free",Font.BOLD, 75));
         FontMetrics metrics3 = getFontMetrics(g.getFont());
         g.drawString("Game Over", (SCREEN_WIDTH - metrics3.stringWidth("GamevOver"))/2, SCREEN_HEIGHT/2 );
-           
     }
+    
     
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -251,11 +276,10 @@ import java.util.Scanner;
             if (applesEaten>10){
             checkDeath();   
             }
-            checkCollisions();
-            
-           
+            checkCollisions();     
         } 
         repaint();
+        
     }
     
     
@@ -283,6 +307,13 @@ import java.util.Scanner;
                         direction = 'D';
                     }
                     break;
+                case KeyEvent.VK_SPACE:
+                    timer.start();
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    timer.stop(); 
+                    break;
+                    
             }
          }
         
