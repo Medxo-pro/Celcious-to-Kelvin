@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements ActionListener {
     final int x[] = new int[GAME_UNITS]; //hold all the x cpordinates
     final int y[] = new int[GAME_UNITS]; //hold all y coordinates 
     int bodyParts = 6;
-    int applesEaten;
+    int applesEaten ;
     int appleX;
     int appleY;
     int applex[] = new int[5];
@@ -77,17 +77,18 @@ public class GamePanel extends JPanel implements ActionListener {
     public void draw(Graphics g) {
 
         if (running) {
-            /*for (int i = 0; i<SCREEN_HEIGHT/UNIT_SIZE; i++){
-                g.setColor(Color.GRAY);
-                g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
-                g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
+            
+            if (applesEaten < 10){
+                for (int i = 0; i<SCREEN_HEIGHT/UNIT_SIZE; i++){
+                    g.setColor(Color.GRAY);
+                    g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
+                    g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
+                }
             }
-             */
-
             if (applesEaten > 10) {
                 g.setColor(Color.yellow);
                 g.fillOval(deathX, deathY, UNIT_SIZE, UNIT_SIZE);
-                level = "L1";
+                level = "L1";     
             }
             if (applesEaten > 20) {
                 this.setBackground(Color.magenta);
@@ -109,6 +110,16 @@ public class GamePanel extends JPanel implements ActionListener {
                     g.fillOval(deathx[i], deathy[i], UNIT_SIZE, UNIT_SIZE);
                 }
             }
+            if (applesEaten > 55) {
+                this.setBackground(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+                for (int i = 0; i<SCREEN_HEIGHT/UNIT_SIZE; i++){
+                    g.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+                    g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
+                    g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
+                }
+                level = "L4";
+            }
+            
 
             g.setColor(Color.red);
             g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
@@ -192,6 +203,7 @@ public class GamePanel extends JPanel implements ActionListener {
             newApple();
         }
 
+
         for (int i = 0; i < applex.length; i++) {
             if ((x[0] == applex[i]) && (y[0] == appley[i])) {
                 applex[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
@@ -200,6 +212,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 applesEaten++;
                 newApple();
             }
+        
         }
     }
 
@@ -213,6 +226,7 @@ public class GamePanel extends JPanel implements ActionListener {
             newDeath();
         }
 
+        if (applesEaten>45){
         for (int i = 0; i < deathx.length; i++) {
             if ((x[0] == deathx[i]) && (y[0] == deathy[i])) {
                 deathx[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
@@ -221,6 +235,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 applesEaten = applesEaten - 8;
                 newDeath();
             }
+         }
         }
     }
 
