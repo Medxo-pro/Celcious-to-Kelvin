@@ -13,9 +13,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import static java.lang.Thread.sleep;
 import java.util.Random;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.JFrame;
 
 /**
  *
@@ -28,10 +33,10 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int UNIT_SIZE = 25;
     static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / UNIT_SIZE;
     static int DELAY = 75; // the heigher this number, the slower the game is.
-    final int x[] = new int[GAME_UNITS]; //hold all the x cpordinates
+    final int x[] = new int[GAME_UNITS]; //hold all the x coordinates
     final int y[] = new int[GAME_UNITS]; //hold all y coordinates 
     int bodyParts = 6;
-    int applesEaten ;
+    int applesEaten = 0;
     int appleX;
     int appleY;
     int applex[] = new int[5];
@@ -46,8 +51,84 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer timer;
     Random random;
     static int maxScore = 0;
+    String mode = "hard";
 
     GamePanel() {
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Please select the mode you wish to play: Easy (1), Hard (0)");
+        int modeSetter = myObj.nextInt();  // Read user input
+        if (modeSetter == 1) {
+            mode = "easy";
+        }
+        if (modeSetter == 0) {
+            mode = "hard";
+        } //else {
+           // System.out.println("Mode automatically set at hard");
+        //}
+        System.out.println("Please select the Level you wish to start at (0,1,2,3,4,5,6)");
+        int levelSetter = myObj.nextInt();  // Read user input
+        if (mode.equals("easy")) {
+            switch (levelSetter) {
+                case 0:
+                    applesEaten = 0;
+                    break;
+                case 1:
+                    applesEaten = 11;
+                    break;
+                case 2:
+                    applesEaten = 21;
+                    break;
+                case 3:
+                    applesEaten = 31;
+                    break;
+                case 4:
+                    applesEaten = 41;
+                    break;
+                case 5:
+                    applesEaten = 46;
+                    break;
+                case 6:
+                    applesEaten = 56;
+                    break;
+                default:
+                    applesEaten = 0;
+                    break;
+            }
+        }
+        if (mode.equals("hard")) {
+            switch (levelSetter) {
+                case 0:
+                    applesEaten = 0;
+                    break;
+                case 1:
+                    applesEaten = 11;
+                    bodyParts = 17;
+                    break;
+                case 2:
+                    applesEaten = 21;
+                    bodyParts = 27;
+                    break;
+                case 3:
+                    applesEaten = 31;
+                    bodyParts = 37;
+                    break;
+                case 4:
+                    applesEaten = 41;
+                    bodyParts = 47;
+                    break;
+                case 5:
+                    applesEaten = 46;
+                    bodyParts = 52;
+                    break;
+                case 6:
+                    applesEaten = 56;
+                    bodyParts = 57;
+                    break;
+                default:
+                    applesEaten = 0;
+                    break;
+            }
+        }
         random = new Random();
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         this.setBackground(Color.black);
@@ -77,18 +158,18 @@ public class GamePanel extends JPanel implements ActionListener {
     public void draw(Graphics g) {
 
         if (running) {
-            
-            if (applesEaten < 10){
-                for (int i = 0; i<SCREEN_HEIGHT/UNIT_SIZE; i++){
+
+            if (applesEaten < 10) {
+                for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
                     g.setColor(Color.GRAY);
-                    g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
-                    g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
+                    g.drawLine(i * UNIT_SIZE, 0, i * UNIT_SIZE, SCREEN_HEIGHT);
+                    g.drawLine(0, i * UNIT_SIZE, SCREEN_WIDTH, i * UNIT_SIZE);
                 }
             }
             if (applesEaten > 10) {
                 g.setColor(Color.yellow);
                 g.fillOval(deathX, deathY, UNIT_SIZE, UNIT_SIZE);
-                level = "L1";     
+                level = "L1";
             }
             if (applesEaten > 20) {
                 this.setBackground(Color.magenta);
@@ -112,14 +193,13 @@ public class GamePanel extends JPanel implements ActionListener {
             }
             if (applesEaten > 55) {
                 this.setBackground(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
-                for (int i = 0; i<SCREEN_HEIGHT/UNIT_SIZE; i++){
+                for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
                     g.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
-                    g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
-                    g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
+                    g.drawLine(i * UNIT_SIZE, 0, i * UNIT_SIZE, SCREEN_HEIGHT);
+                    g.drawLine(0, i * UNIT_SIZE, SCREEN_WIDTH, i * UNIT_SIZE);
                 }
                 level = "L4";
             }
-            
 
             g.setColor(Color.red);
             g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
@@ -203,7 +283,6 @@ public class GamePanel extends JPanel implements ActionListener {
             newApple();
         }
 
-
         for (int i = 0; i < applex.length; i++) {
             if ((x[0] == applex[i]) && (y[0] == appley[i])) {
                 applex[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
@@ -212,30 +291,42 @@ public class GamePanel extends JPanel implements ActionListener {
                 applesEaten++;
                 newApple();
             }
-        
+
         }
     }
 
     public void checkDeath() {
         if ((x[0] == deathX) && (y[0] == deathY)) {
-            bodyParts = bodyParts - 8;
-            applesEaten = applesEaten - 8;
+            if (mode.equals("easy")) {
+                bodyParts = bodyParts - 4;
+                applesEaten = applesEaten - 4;
+            }
+            if (mode.equals("hard")) {
+                bodyParts = bodyParts - 8;
+                applesEaten = applesEaten - 8;
+            }
             level = "L0";
             deathX = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
             deathY = random.nextInt((int) (SCREEN_HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
             newDeath();
         }
 
-        if (applesEaten>45){
-        for (int i = 0; i < deathx.length; i++) {
-            if ((x[0] == deathx[i]) && (y[0] == deathy[i])) {
-                deathx[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
-                deathy[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
-                bodyParts = bodyParts - 8;
-                applesEaten = applesEaten - 8;
-                newDeath();
+        if (applesEaten > 45) {
+            for (int i = 0; i < deathx.length; i++) {
+                if ((x[0] == deathx[i]) && (y[0] == deathy[i])) {
+                    deathx[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
+                    deathy[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
+                    if (mode.equals("easy")) {
+                        bodyParts = bodyParts - 4;
+                        applesEaten = applesEaten - 4;
+                    }
+                    if (mode.equals("hard")) {
+                        bodyParts = bodyParts - 8;
+                        applesEaten = applesEaten - 8;
+                    }
+                    newDeath();
+                }
             }
-         }
         }
     }
 
@@ -247,32 +338,79 @@ public class GamePanel extends JPanel implements ActionListener {
                 running = false;
             }
         }
-        //Check if head collides with left border
-        if (x[0] < 0) {
-            running = false;
+
+        if (mode.equals("easy")) {
+            //Check if head collides with left border
+            if (x[0] < 0) {
+                bodyParts--;
+                applesEaten--;
+            }
+            //Check if head collides with left border
+            if (x[0] > SCREEN_WIDTH) {
+                bodyParts--;
+                applesEaten--;
+            }
+            //Check if head collides with top border
+            if (y[0] < 0) {
+                bodyParts--;
+                applesEaten--;
+            }
+            //Check if head collides with bottom border
+            if (y[0] > SCREEN_HEIGHT) {
+                bodyParts--;
+                applesEaten--;
+            }
+
+            if (applesEaten == -1) {
+                timer.stop();
+                running = false;
+            }
         }
 
-        //Check if head collides with left border
-        if (x[0] > SCREEN_WIDTH) {
-            running = false;
-        }
-        //Check if head collides with top border
-        if (y[0] < 0) {
-            running = false;
-        }
-        //Check if head collides with bottom border
-        if (y[0] > SCREEN_HEIGHT) {
-            running = false;
-        }
+        if (mode.equals("hard")) {
+            //Check if head collides with left border
+            if (x[0] < 0) {
+                running = false;
+            }
 
-        if (running == false) {
-            timer.stop();
+            //Check if head collides with left border
+            if (x[0] > SCREEN_WIDTH) {
+                running = false;
+            }
+            //Check if head collides with top border
+            if (y[0] < 0) {
+                running = false;
+            }
+            //Check if head collides with bottom border
+            if (y[0] > SCREEN_HEIGHT) {
+                running = false;
+            }
+
+            if (running == false) {
+                timer.stop();
+            }
         }
 
     }
 
+    public void restartGame() {
+        direction = 'R';
+        bodyParts = 6;
+        applesEaten = 0;
+        level = "L0";
+        running = true;
+        newApple();
+        newApples();
+        newDeath();
+        newDeaths();
+        timer.start(); // Start the timer to resume the game
+    }
+
     public void gameOver(Graphics g) {
 
+        // Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        // System.out.println("Do you want to continue playing? 0 NO, 1 YES");
+        // int input = myObj.nextInt();  // Read user input
         if (applesEaten > maxScore) {
             maxScore = applesEaten;
             //Show New Top Score
@@ -302,10 +440,12 @@ public class GamePanel extends JPanel implements ActionListener {
         g.setFont(new Font("Ink Free", Font.BOLD, 75));
         FontMetrics metrics3 = getFontMetrics(g.getFont());
         g.drawString("Game Over", (SCREEN_WIDTH - metrics3.stringWidth("GamevOver")) / 2, SCREEN_HEIGHT / 2);
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         if (running) {
             move();
             checkApple();
